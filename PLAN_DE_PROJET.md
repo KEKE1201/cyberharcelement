@@ -57,3 +57,14 @@ cyberharcelement/
 - Indices à mettre en avant : répétition, humiliation, diffusion de contenus, contexte et vécu de la personne concernée.
 - Présenter une situation comme « possible » et encourager à demander de l’aide ; la capsule n’établit pas de diagnostic juridique.
 - Toutes les conversations et situations sont fictives. Citer la ressource institutionnelle et conserver son lien d’origine.
+
+## Révision selon le cahier des charges fourni
+
+- Ressource : ajout d’un texte pédagogique sur la répétition, l’humiliation, la diffusion, le contexte et le vécu.
+- Nathan/Lucas : contexte explicite du montage humiliant partagé sans accord ; réponses A/B/D conservées ; absence de preuve d’une répétition sur plusieurs semaines expliquée.
+- Classement : catégories conservées ; consentement révocable et diffusion dans plusieurs groupes précisés.
+- Inès : situation complète, réponses A/B/C et explication des distracteurs.
+- Synthèse : violence isolée et absence de demande d’arrêt prises au sérieux ; fiche imprimable et enregistrable en PDF.
+- Interactions : nouvelles tentatives, consignes de validation et corrections accessibles sans dépendre uniquement des couleurs.
+- Technique : React + Vite conservé. Écart explicite avec Lumi H5P Course Presentation ; classement par listes déroulantes plutôt que par glisser-déposer. Pas d’export H5P ni de suivi LMS.
+- Vérification de cette révision : compilation de production réussie. Les anciennes vérifications navigateur ci-dessus concernent l’état antérieur ; les nouveaux contrôles visuels, clavier, lecteur d’écran et impression restent à réaliser.

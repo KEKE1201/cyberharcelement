@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import MultiSelectQuestion from './components/MultiSelectQuestion.jsx'
 import ProgressBar from './components/ProgressBar.jsx'
 import SceneIllustration from './components/SceneIllustration.jsx'
+import RecapSheet from './components/RecapSheet.jsx'
 import { courseStages } from './content/course.js'
 
 function Welcome({ onStart, finished }) {
@@ -9,7 +10,7 @@ function Welcome({ onStart, finished }) {
     <section className="hero" id="accueil" aria-labelledby="page-title">
       <div className="hero-copy">
         <p className="eyebrow">CAPSULE INTERACTIVE · 13–15 ANS</p>
-        <h1 id="page-title">Reconnaître une situation de cyberharcèlement</h1>
+        <h1 id="page-title" tabIndex="-1">Reconnaître une situation de cyberharcèlement</h1>
         <p className="intro">
           Apprends à repérer les indices importants, à comparer différentes
           situations et à savoir quand demander de l’aide.
@@ -26,7 +27,7 @@ function Welcome({ onStart, finished }) {
           {finished ? 'Revoir la capsule' : 'Commencer la capsule'}
           <span aria-hidden="true">→</span>
         </button>
-        <p className="privacy-note">Activité individuelle · À ton rythme · Aucune réponse n’est envoyée</p>
+        <p className="privacy-note">Activité individuelle · À ton rythme · Aucune réponse n’est envoyée ni conservée après actualisation</p>
       </div>
 
       <aside className="side-card" aria-label="Aperçu du parcours">
@@ -57,7 +58,7 @@ function App() {
   const selectedAnswers = stage ? answers[stage.id] ?? [] : []
 
   useEffect(() => {
-    if (currentStep >= 0) document.getElementById('stage-title')?.focus()
+    document.getElementById(currentStep >= 0 ? 'stage-title' : 'page-title')?.focus()
   }, [currentStep])
 
   function startCourse() {
@@ -121,6 +122,7 @@ function App() {
 
   return (
     <main className="page-shell">
+      <a className="skip-link" href={stage ? "#stage-title" : "#page-title"}>Aller au contenu</a>
       <header className="topbar">
         <button className="brand" onClick={() => setCurrentStep(-1)} aria-label="Retour à l’accueil de la capsule">
           <span className="brand-mark" aria-hidden="true">C</span>
@@ -160,6 +162,18 @@ function App() {
             )}
 
             {stage.type === 'resource' && (
+              <div className="resource-section">
+              <div className="goal-panel">
+                <h2>Les repères pour analyser une situation</h2>
+                <p>Observe les comportements, leur répétition, la diffusion des contenus et leurs conséquences pour la personne concernée.</p>
+                <ul className="takeaway-list">
+                  <li><strong>Répétition :</strong> les attaques reviennent. Les repartages peuvent multiplier les attaques contre la même personne.</li>
+                  <li><strong>Humiliation et diffusion :</strong> des moqueries, des insultes ou un montage peuvent blesser, surtout quand ils circulent dans plusieurs groupes.</li>
+                  <li><strong>Contexte et vécu :</strong> cherche à comprendre ce qui se passe et ce que ressent la personne.</li>
+                </ul>
+                <p>Un conflit ponctuel est différent d’attaques répétées. Une plaisanterie doit être acceptée par les personnes concernées et s’arrêter dès qu’une personne exprime son désaccord.</p>
+                <p className="gentle-note">Une violence isolée reste préoccupante : tu peux demander de l’aide sans attendre qu’elle se répète. La personne n’a pas besoin d’avoir demandé l’arrêt pour être prise au sérieux.</p>
+              </div>
               <div className="resource-layout">
                 <SceneIllustration kind={stage.visual} />
                 <div className="resource-card">
@@ -170,9 +184,10 @@ function App() {
                     <p>{stage.resourceSource}</p>
                   </div>
                   <a className="resource-link" href={stage.resourceUrl} target="_blank" rel="noreferrer">
-                    Ouvrir l’infographie <span aria-hidden="true">↗</span>
+                    Ouvrir l’infographie (PDF, nouvel onglet) <span aria-hidden="true">↗</span>
                   </a>
                 </div>
+              </div>
               </div>
             )}
 
@@ -203,6 +218,7 @@ function App() {
                     </div>
                   </div>
                 )}
+                <p className="activity-hint">{submittedForStage ? "Correction affichée. Tu peux réessayer ou continuer." : "Plusieurs réponses sont possibles. Sélectionne au moins une réponse, puis vérifie tes choix."}</p>
                 <MultiSelectQuestion
                   question={stage.question}
                   options={stage.options}
@@ -219,6 +235,10 @@ function App() {
                   <div className={`feedback-box ${answerIsCorrect ? 'feedback-success' : 'feedback-review'}`} role="status">
                     <strong>{answerIsCorrect ? 'Bien joué !' : 'Regardons les indices ensemble'}</strong>
                     <p>{stage.feedback}</p>
+                    <button className="secondary-button retry-button" onClick={() => {
+                      setSubmitted((previous) => ({ ...previous, [stage.id]: false }))
+                      setAnswers((previous) => ({ ...previous, [stage.id]: [] }))
+                    }}>Réessayer cette activité</button>
                   </div>
                 )}
               </div>
@@ -226,6 +246,7 @@ function App() {
 
             {stage.type === 'classify' && (
               <div className="activity-block classification-list">
+                <p className="activity-hint">Choisis une catégorie pour chacune des trois situations pour afficher la correction.</p>
                 {stage.situations.map((situation) => {
                   const correct = classifications[situation.id] === situation.answer
                   const incorrect = classificationSubmitted && !correct
@@ -262,24 +283,17 @@ function App() {
                   <div className={`feedback-box ${classificationIsCorrect ? 'feedback-success' : 'feedback-review'}`} role="status">
                     <strong>{classificationIsCorrect ? 'Tout est bien classé !' : 'Compare tes choix avec les corrections.'}</strong>
                     <p>Une situation possible se repère à partir de plusieurs indices et de leur contexte.</p>
+                    <button className="secondary-button retry-button" onClick={() => { setClassificationSubmitted(false); setClassifications({}) }}>Réessayer le classement</button>
                   </div>
                 )}
               </div>
             )}
 
             {stage.type === 'summary' && (
-              <div className="goal-panel summary-panel">
-                <h2>Les repères essentiels</h2>
-                <div className="summary-layout">
-                  <SceneIllustration kind={stage.visual} />
-                  <ul className="takeaway-list">
-                    {stage.takeaways.map((takeaway) => <li key={takeaway}>{takeaway}</li>)}
-                  </ul>
-                </div>
-                <p className="help-callout"><span aria-hidden="true">♡</span>{stage.help}</p>
-              </div>
+              <RecapSheet stage={stage} resource={courseStages.find((item) => item.type === 'resource')} />
             )}
 
+            {!mayContinue && <p className="activity-hint">Vérifie tes réponses pour pouvoir continuer. Tu pourras avancer même si tu t’es trompé.</p>}
             <nav className="lesson-navigation" aria-label="Navigation de la capsule">
               <button className="back-button" onClick={goPrevious} disabled={currentStep === 0}>← Précédent</button>
               <button className="start-button" onClick={goNext} disabled={!mayContinue}>
